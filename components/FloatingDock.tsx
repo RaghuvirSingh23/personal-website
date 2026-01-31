@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import {
@@ -10,12 +11,12 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 
-const links = [
+const socialLinks = [
   {
     name: "GitHub",
     href: "https://github.com/raghuvirsingh23",
     icon: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
       </svg>
     ),
@@ -24,19 +25,16 @@ const links = [
     name: "LinkedIn",
     href: "https://www.linkedin.com/in/raghuvir-singh23/",
     icon: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
       </svg>
     ),
   },
-];
-
-const linksRight = [
   {
     name: "LeetCode",
     href: "https://leetcode.com/u/ragsgotbags",
     icon: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z" />
       </svg>
     ),
@@ -45,7 +43,7 @@ const linksRight = [
     name: "Email",
     href: "mailto:raghuvir9923@gmail.com",
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
@@ -97,33 +95,70 @@ function ThemeToggle() {
   );
 }
 
+function SocialsDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-background/50 transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          Socials
+        </TooltipContent>
+      </Tooltip>
+
+      {isOpen && (
+        <div className="absolute bottom-full left-0 mb-2 py-2 px-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl min-w-[140px]">
+          {socialLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              target={link.href.startsWith("mailto") ? undefined : "_blank"}
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.icon}
+              {link.name}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function FloatingDock() {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
         <div className="flex items-center gap-1 px-3 py-2 bg-secondary/80 backdrop-blur-md rounded-full border border-border shadow-lg">
-          {/* Left links */}
-          {links.map((link) => (
-            <Tooltip key={link.name}>
-              <TooltipTrigger asChild>
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-background/50 transition-all"
-                >
-                  {link.icon}
-                </a>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {link.name}
-              </TooltipContent>
-            </Tooltip>
-          ))}
+          {/* Socials dropdown */}
+          <SocialsDropdown />
 
           <div className="w-px h-6 bg-border mx-1" />
 
-          {/* Blog button in the middle */}
+          {/* Blog button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button asChild size="sm" className="rounded-full px-4 h-9">
@@ -139,27 +174,6 @@ export function FloatingDock() {
               Read my posts
             </TooltipContent>
           </Tooltip>
-
-          <div className="w-px h-6 bg-border mx-1" />
-
-          {/* Right links */}
-          {linksRight.map((link) => (
-            <Tooltip key={link.name}>
-              <TooltipTrigger asChild>
-                <a
-                  href={link.href}
-                  target={link.href.startsWith("mailto") ? undefined : "_blank"}
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-background/50 transition-all"
-                >
-                  {link.icon}
-                </a>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {link.name}
-              </TooltipContent>
-            </Tooltip>
-          ))}
 
           <div className="w-px h-6 bg-border mx-1" />
 
